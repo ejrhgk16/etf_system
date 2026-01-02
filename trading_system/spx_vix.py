@@ -42,11 +42,18 @@ class SPX_VIX:
         historical_data.columns = [col.replace('^', '') for col in historical_data.columns]
         all_data = historical_data.ffill()
         
-        latest_prices_data = yf.download(self.all_tickers, period="2d", auto_adjust=True, back_adjust=True, progress=True)
+        # 최신 가격 데이터 다운로드 (7일치)
+        latest_prices_data = yf.download(self.all_tickers, period="7d", auto_adjust=True, back_adjust=True, progress=True)
         if latest_prices_data.empty or 'Close' not in latest_prices_data.columns:
             raise ConnectionError("수량 계산을 위한 최신 가격 정보를 가져오는 데 실패했습니다.")
 
-        latest_prices = latest_prices_data['Close'].iloc[-1]
+        # NA 값을 포함한 행을 먼저 제거
+        latest_prices_close = latest_prices_data['Close'].dropna()
+        if latest_prices_close.empty:
+            raise ConnectionError("NA 값 제거 후 최신 가격 정보가 없습니다.")
+
+        # 유효한 데이터 중 가장 마지막(최신) 행을 선택
+        latest_prices = latest_prices_close.iloc[-1]
         latest_prices.index = [idx.replace('^', '') for idx in latest_prices.index]
         
         return all_data.dropna(), latest_prices
@@ -70,12 +77,14 @@ class SPX_VIX:
             df, latest_prices = self.fetch_data(start_date.strftime('%Y-%m-%d'), end_date.strftime('%Y-%m-%d'))
             if df.empty or latest_prices.empty: raise ValueError("데이터 다운로드 실패")
             df = self.add_indicators(df).dropna(subset=['RSI_Custom', 'VIX', 'VIX3M'])
+
         except Exception as e:
             return print(f"FATAL: 데이터 처리 중 오류 발생 - {e}")
 
         if df.empty: return print("분석을 위한 최종 데이터가 없습니다.")
         
         latest_signal_data = df.iloc[-1]
+        
         latest_svxy_price = latest_prices.get('SVXY', 0); latest_vixm_price = latest_prices.get('VIXM', 0)
         if pd.isna(latest_svxy_price): latest_svxy_price = 0
         if pd.isna(latest_vixm_price): latest_vixm_price = 0
