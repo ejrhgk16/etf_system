@@ -20,7 +20,7 @@ class SPX_VIX:
         except (ValueError, TypeError):
             self.capital, self.current_svxy_shares, self.current_vixm_shares = 10000, 0, 0
 
-        self.rsi_len = rsi_len
+        self.rsi_len = rsi_len 
         self.commission_rate = commission_rate
         self.all_tickers = ["^SPX", "^VIX9D", "^VIX3M", "SVXY", "VIXM"]
 
