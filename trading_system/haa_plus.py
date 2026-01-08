@@ -178,13 +178,13 @@ class HAA:
             print(f"총 사용 금액 (예상): ${total_spent:,.2f}")
             print(f"남는 현금: ${remaining_cash:,.2f}")
 
-if __name__ == "__main__":
-    try:
-        # HAA 클래스 인스턴스 생성
-        strategy = HAA()
+# if __name__ == "__main__":
+#     try:
+#         # HAA 클래스 인스턴스 생성
+#         strategy = HAA()
         
-        # 포트폴리오 계산 및 출력 실행
-        strategy.get_today_portfolio()
-    except ValueError as e:
-        # HAA 클래스 생성 시 발생할 수 있는 오류 처리
-        print(f"Error: {e}")
+#         # 포트폴리오 계산 및 출력 실행
+#         strategy.get_today_portfolio()
+#     except ValueError as e:
+#         # HAA 클래스 생성 시 발생할 수 있는 오류 처리
+#         print(f"Error: {e}")
